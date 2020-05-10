@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { withTracker } from "meteor/react-meteor-data";
+import ReactGA from "react-ga";
 import wdk from "wikidata-sdk";
 import "./HistoricalCountries.scss";
 import moment from "moment";
+
 import Header from "../../layout/Header/Header";
 import { Badge } from "react-bootstrap";
 
@@ -16,6 +17,8 @@ export default class HistoricalCountries extends Component {
   timelineRef = React.createRef();
 
   componentDidMount() {
+    ReactGA.set({ page: this.props.location.pathname });
+    ReactGA.pageview(this.props.location.pathname);
     this.getData();
   }
 
