@@ -1,0 +1,76 @@
+.HistoricalCountries {
+  .timeline {
+    position: relative;
+    overflow-x: scroll;
+    border: 1px solid grey;
+    margin-bottom: 20px;
+  }
+  .scrollableY {
+    overflow-y: scroll;
+    height: calc(100vh - 174px);
+    overflow-x: hidden;
+  }
+  .row {
+    border-bottom: 1px dashed lightGrey;
+    height: 56px;
+  }
+  .item {
+    position: relative;
+    font-size: 14px;
+    .line {
+      position: relative;
+      width: 100%;
+      background-color: grey;
+      border-radius: 4px;
+      display: inline-block;
+      height: 8px;
+    }
+    .content {
+      line-height: 2em;
+      display: block;
+      white-space: nowrap;
+      position: absolute;
+      &.left {
+        left: 0;
+      }
+      &.right {
+        right: 0;
+      }
+    }
+    .imgWrapper {
+      width: 2em;
+      height: 2em;
+      text-align: center;
+      display: inline-block;
+      margin-right: 5px;
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        vertical-align: middle;
+      }
+    }
+  }
+  .ticks {
+    height: 28px;
+    position: relative;
+    display: block;
+    border-bottom: 1px solid grey;
+    .tick {
+      position: absolute;
+      bottom: 0;
+      .tickLine {
+        position: absolute;
+        height: 5px;
+        bottom: 0;
+        border-left: 1px solid grey;
+      }
+      .tickYear {
+        white-space: nowrap;
+        font-size: 12px;
+        position: absolute;
+        bottom: 5px;
+        transform: translateX(-50%);
+      }
+    }
+  }
+}
