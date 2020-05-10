@@ -16,7 +16,9 @@ ecmascript@0.14.3              # Enable ECMAScript2015+ syntax in app code
 typescript@3.7.6              # Enable TypeScript syntax in .ts and .tsx modules
 shell-server@0.5.0            # Server-side component of the `meteor shell` command
 
+check
 static-html             # Define static page content in .html files
 react-meteor-data       # React higher-order component for reactively tracking Meteor data
 fourseven:scss
 accounts-password
+percolate:migrations
