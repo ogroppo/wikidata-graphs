@@ -20,6 +20,7 @@ class Header extends Component {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="/timelines">Timelines</Nav.Link>
+            <Nav.Link href="/trees">Trees</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
