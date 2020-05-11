@@ -116,15 +116,20 @@ export default class FamilyTreeGraph extends Component {
       .then(wdk.simplify.sparqlResults)
       .then((children) => {
         let childrenDublicates = {};
-        children.forEach(({ child }, index, { length }) => {
+        let uniqueChildren = children.filter(({ child }) => {
           if (!childrenDublicates[child.value]) {
             childrenDublicates[child.value] = true;
-            this.addChild({
-              ...child,
-              origin: person.value,
-              offset: indexToOffset(index, length),
-            });
+            return true;
           }
+        });
+        console.log(children, uniqueChildren);
+
+        uniqueChildren.forEach(({ child }, index, { length }) => {
+          this.addChild({
+            ...child,
+            origin: person.value,
+            offset: indexToOffset(index, length),
+          });
         });
         this.calcSvgStyle();
       })
@@ -263,6 +268,7 @@ class PersonSvg extends Component {
     return (
       <g
         onClick={() => this.openPage(person)}
+        className="personGroup"
         transform={`translate(${person.left} ${person.top})`}
       >
         <g transform={`translate(-25 -25)`}>

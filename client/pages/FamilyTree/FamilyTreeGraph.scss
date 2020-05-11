@@ -27,8 +27,10 @@
     margin: 0;
     padding: 0;
   }
-  .personIcon {
+  .personGroup {
     cursor: pointer;
+  }
+  .personIcon {
     font-size: 38px;
     .personIconCircle {
       stroke: lightgrey;
@@ -37,7 +39,6 @@
     }
   }
   .personName {
-    cursor: pointer;
     .firstName {
       font-size: 14px;
       text-anchor: middle;
