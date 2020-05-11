@@ -1,0 +1,47 @@
+.FamilyTree {
+  .searchGroup {
+    position: relative;
+  }
+  .pleaseText {
+    //color: grey;
+  }
+  .searchingMessage {
+    padding: 0.375rem 0.75rem;
+    color: grey;
+    .spinner-border {
+      width: 1em;
+      height: 1em;
+    }
+  }
+  .dropdown-menu {
+    position: absolute;
+    top: 72px;
+  }
+  .searchResultBtn {
+    display: flex;
+    width: 100%;
+    line-height: 30px;
+    i {
+      color: gray;
+      margin-left: 10px;
+      text-decoration: gray;
+    }
+  }
+  .searchResultImg {
+    height: 30px;
+    width: 30px;
+    overflow: hidden;
+    display: inline-block;
+    margin-right: 5px;
+    img {
+      width: 100%;
+      vertical-align: middle;
+    }
+  }
+  .relPath {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 16;
+    stroke: #eee;
+  }
+}

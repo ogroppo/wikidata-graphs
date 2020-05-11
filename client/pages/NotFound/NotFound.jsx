@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Header from "../../layout/Header/Header";
 import { Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export default class NotFound extends Component {
   componentDidMount() {}
@@ -9,8 +10,9 @@ export default class NotFound extends Component {
     return (
       <div className="NotFound">
         <Header />
-        <Container>
+        <Container className="mt-4">
           <h1>404 - Page not found</h1>
+          <Link to="/">Back to homepage</Link>
         </Container>
       </div>
     );

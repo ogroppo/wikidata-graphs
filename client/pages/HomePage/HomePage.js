@@ -3,6 +3,7 @@ import { withTracker } from "meteor/react-meteor-data";
 import { Link } from "react-router-dom";
 import Header from "../../layout/Header/Header";
 import { MdTimeline } from "react-icons/md";
+import { GiFamilyTree } from "react-icons/gi";
 import "./HomePage.scss";
 import ReactGA from "react-ga";
 
@@ -23,6 +24,12 @@ class HomePage extends Component {
             <Link to={"/timelines"}>
               <MdTimeline className="mr-2" />
               Timelines
+            </Link>
+          </p>
+          <p>
+            <Link to={"/trees"}>
+              <GiFamilyTree className="mr-2" />
+              Trees
             </Link>
           </p>
         </div>

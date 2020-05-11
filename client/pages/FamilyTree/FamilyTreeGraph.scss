@@ -1,0 +1,50 @@
+.FamilyTreeGraph {
+  position: relative;
+  overflow: hidden;
+  height: calc(100vh - 240px);
+  border: 1px solid lightGrey;
+  border-radius: 4px;
+  .dragArea {
+    height: 100%;
+    width: 100%;
+    .spinner-grow {
+      position: relative;
+      left: -1rem;
+      top: -1rem;
+    }
+  }
+  .personFirstname {
+    font-size: 14px;
+    text-anchor: middle;
+  }
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+  svg {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+  }
+  .personIcon {
+    cursor: pointer;
+    font-size: 38px;
+    .personIconCircle {
+      stroke: lightgrey;
+      stroke-width: 3;
+      fill: white;
+    }
+  }
+  .personName {
+    cursor: pointer;
+    .firstName {
+      font-size: 14px;
+      text-anchor: middle;
+    }
+    .familyName {
+      font-size: 12px;
+      text-anchor: middle;
+    }
+  }
+}
