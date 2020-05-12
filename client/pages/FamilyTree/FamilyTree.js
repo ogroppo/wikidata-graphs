@@ -29,27 +29,15 @@ export default class FamilyTree extends Component {
         searchValue,
         showSuggesstions: true,
       },
-      this.search
+      this.lazySearch
     );
   };
 
-  search = _.debounce(() => {
-    this.setState({
-      loadingSuggestions: true,
-    });
-
-    let titleCaseSearch =
-      this.state.searchValue.length > 1
-        ? this.state.searchValue
-            .split(" ")
-            .map((w) => w[0].toUpperCase() + w.substr(1).toLowerCase())
-            .join(" ")
-        : this.state.searchValue.toUpperCase;
-
+  search = (label) => {
     let query = `
     SELECT ?item ?itemLabel ?itemDescription ?img ?genderLabel ?familyNameLabel WHERE {
       ?item wdt:P31 wd:Q5.
-      ?item ?label '${titleCaseSearch}'@en .
+      ?item ?label '${label}'@en .
       optional { ?item wdt:P734 ?familyName . }
       optional { ?item wdt:P18 ?img . }
       optional { ?item wdt:P21 ?gender . }
@@ -69,6 +57,22 @@ export default class FamilyTree extends Component {
           loadingSuggestions: false,
         });
       });
+  };
+
+  lazySearch = _.debounce(() => {
+    this.setState({
+      loadingSuggestions: true,
+    });
+
+    let titleCaseSearch =
+      this.state.searchValue.length > 1
+        ? this.state.searchValue
+            .split(" ")
+            .map((w) => w[0].toUpperCase() + w.substr(1).toLowerCase())
+            .join(" ")
+        : this.state.searchValue.toUpperCase;
+
+    this.search(titleCaseSearch);
   }, 300);
 
   formatResults = (results) => {
@@ -84,6 +88,7 @@ export default class FamilyTree extends Component {
 
   goToPerson = (root) => {
     this.setState({
+      searchValue: root.label,
       searchResults: [],
       showSuggesstions: false,
       root,
@@ -146,7 +151,7 @@ export default class FamilyTree extends Component {
               </div>
             </Form.Group>
             {root ? (
-              <FamilyTreeGraph root={root} />
+              <FamilyTreeGraph root={root} goToPerson={this.goToPerson} />
             ) : (
               <Alert variant="info">
                 Hint: if you search by full name the results will be more

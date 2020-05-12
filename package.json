@@ -22,6 +22,7 @@
     "react-icons": "^3.10.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
+    "react-zoom-pan-pinch": "^1.6.1",
     "underscore": "^1.10.2",
     "wikidata-sdk": "^7.4.1"
   },

@@ -1,5 +1,7 @@
 .Header {
-  padding: 2px 2%;
+  &.navbar {
+    padding: 2px 2%;
+  }
   .navbar-brand {
     display: flex;
   }

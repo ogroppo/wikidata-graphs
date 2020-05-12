@@ -4,6 +4,12 @@
   height: calc(100vh - 240px);
   border: 1px solid lightGrey;
   border-radius: 4px;
+  .react-transform-component,
+  .react-transform-element {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
   .dragArea {
     height: 100%;
     width: 100%;
@@ -32,6 +38,7 @@
   }
   .personIcon {
     font-size: 38px;
+    cursor: pointer;
     .personIconCircle {
       stroke: lightgrey;
       stroke-width: 3;

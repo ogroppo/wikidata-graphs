@@ -1,12 +1,7 @@
 import React, { Component } from "react";
-import ReactGA from "react-ga";
-import { Link } from "react-router-dom";
-import Header from "../../layout/Header/Header";
 import { FaFemale, FaMale } from "react-icons/fa";
-import Draggable from "react-draggable";
-
-import { Form, Dropdown, Button, Spinner } from "react-bootstrap";
-import { BsPersonSquare } from "react-icons/bs";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { Spinner } from "react-bootstrap";
 import wdk from "wikidata-sdk";
 import _ from "underscore";
 import "./FamilyTreeGraph.scss";
@@ -17,8 +12,6 @@ const CARD_HEIGHT = 120;
 const defaultState = {
   people: [],
   rels: [],
-  svgCenterX: 0,
-  svgCenterY: 0,
 };
 
 export default class FamilyTreeGraph extends Component {
@@ -27,9 +20,18 @@ export default class FamilyTreeGraph extends Component {
   maxOffset = 0;
   peopleMap = {};
 
+  dragAreaRef = React.createRef();
   componentDidMount() {
     this.draw();
   }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.root !== this.props.root) {
+      this.draw();
+    }
+  }
+
+  componentWillUnmount() {}
 
   draw = () => {
     this.setState({
@@ -40,12 +42,6 @@ export default class FamilyTreeGraph extends Component {
     this.getParents(this.props.root);
     this.getChildren(this.props.root);
   };
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.root !== this.props.root) {
-      this.draw();
-    }
-  }
 
   //done at the end of children... could be in a better place
   calcSvgStyle = () => {
@@ -58,9 +54,9 @@ export default class FamilyTreeGraph extends Component {
         left: -svgWidth / 2,
         height: svgHeight,
         top: -svgHeight / 2,
+        centerX: svgWidth / 2,
+        centerY: svgHeight / 2,
       },
-      svgCenterX: svgWidth / 2,
-      svgCenterY: svgHeight / 2,
       loading: false,
     });
   };
@@ -122,7 +118,6 @@ export default class FamilyTreeGraph extends Component {
             return true;
           }
         });
-        console.log(children, uniqueChildren);
 
         uniqueChildren.forEach(({ child }, index, { length }) => {
           this.addChild({
@@ -208,51 +203,68 @@ export default class FamilyTreeGraph extends Component {
       });
   };
 
+  updateRoot = (person) => {
+    console.log(person);
+    this.setState({
+      rootX: person.left,
+      rootY: person.top,
+    });
+    this.props.goToPerson(person);
+  };
+
   render() {
     const {
       svgStyle,
-      svgCenterX,
-      svgCenterY,
       people,
       rels,
       loading,
+      rootX = 0,
+      rootY = 0,
     } = this.state;
     return (
       <div className="FamilyTreeGraph">
-        <Draggable>
-          <div className="dragArea">
-            <div className="center">
-              {loading ? (
-                <Spinner animation="grow" variant="secondary" />
-              ) : (
-                <svg
-                  style={svgStyle}
-                  transform="scale(1)"
-                  className="shapesSvg"
-                >
-                  <clipPath id="clipCircle">
-                    <circle r="25" cx="25" cy="25" />
-                  </clipPath>
-                  <g
-                    transform={`translate(${svgCenterX} ${svgCenterY})`}
-                    className="svgCenter"
+        <div ref={this.dragAreaRef} className="dragArea">
+          <TransformWrapper
+            options={{ limitToBounds: false, minScale: 0.2, maxScale: 2 }}
+          >
+            <TransformComponent>
+              <div className="center">
+                {loading || !svgStyle ? (
+                  <Spinner animation="grow" variant="secondary" />
+                ) : (
+                  <svg
+                    style={svgStyle}
+                    transform="scale(1)"
+                    className="shapesSvg"
                   >
-                    <g className="rels">
-                      {rels.map(({ id, d }) => (
-                        <path className="relPath" key={id} d={d} />
-                      ))}
+                    <clipPath id="clipCircle">
+                      <circle r="25" cx="25" cy="25" />
+                    </clipPath>
+                    <g
+                      transform={`translate(${svgStyle.centerX} ${svgStyle.centerY})`}
+                      className="svgCenter"
+                    >
+                      <g className="rels">
+                        {rels.map(({ id, d }) => (
+                          <path className="relPath" key={id} d={d} />
+                        ))}
+                      </g>
+                      <g className="people">
+                        {people.map((person) => (
+                          <PersonSvg
+                            updateRoot={this.updateRoot}
+                            key={person.value}
+                            person={person}
+                          />
+                        ))}
+                      </g>
                     </g>
-                    <g className="people">
-                      {people.map((person) => (
-                        <PersonSvg key={person.value} person={person} />
-                      ))}
-                    </g>
-                  </g>
-                </svg>
-              )}
-            </div>
-          </div>
-        </Draggable>
+                  </svg>
+                )}
+              </div>
+            </TransformComponent>
+          </TransformWrapper>
+        </div>
       </div>
     );
   }
@@ -267,8 +279,8 @@ class PersonSvg extends Component {
     const { person } = this.props;
     return (
       <g
-        onClick={() => this.openPage(person)}
         className="personGroup"
+        onClick={() => this.props.updateRoot(person)}
         transform={`translate(${person.left} ${person.top})`}
       >
         <g transform={`translate(-25 -25)`}>
