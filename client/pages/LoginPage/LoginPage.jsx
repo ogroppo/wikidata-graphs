@@ -3,6 +3,7 @@ import Header from "../../layout/Header/Header";
 import { Container, Form, Button, Row, Col } from "react-bootstrap";
 import { Redirect, useLocation } from "react-router";
 import { withTracker } from "meteor/react-meteor-data";
+import Footer from "../../layout/Footer/Footer";
 
 class LoginPage extends Component {
   state = {
@@ -92,6 +93,7 @@ class LoginPage extends Component {
             </Col>
           </Row>
         </Container>
+        <Footer />
       </div>
     );
   }

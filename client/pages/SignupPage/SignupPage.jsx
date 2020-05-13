@@ -4,6 +4,7 @@ import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Accounts } from "meteor/accounts-base";
 import { Redirect } from "react-router";
 import { withTracker } from "meteor/react-meteor-data";
+import Footer from "../../layout/Footer/Footer";
 
 class SignupPage extends Component {
   state = {
@@ -107,6 +108,7 @@ class SignupPage extends Component {
             </Col>
           </Row>
         </Container>
+        <Footer />
       </div>
     );
   }

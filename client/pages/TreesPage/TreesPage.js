@@ -3,6 +3,7 @@ import { withTracker } from "meteor/react-meteor-data";
 import ReactGA from "react-ga";
 import { Link } from "react-router-dom";
 import Header from "../../layout/Header/Header";
+import Footer from "../../layout/Footer/Footer";
 //import "./TreesPage.scss";
 
 export default class TreesPage extends Component {
@@ -21,6 +22,7 @@ export default class TreesPage extends Component {
             <Link to={"/tree/family-tree"}>Family Tree</Link>
           </p>
         </div>
+        <Footer />
       </div>
     );
   }

@@ -9,6 +9,7 @@ import _ from "underscore";
 
 import "./FamilyTree.scss";
 import FamilyTreeGraph from "./FamilyTreeGraph";
+import Footer from "../../layout/Footer/Footer";
 
 export default class FamilyTree extends Component {
   state = {
@@ -160,6 +161,7 @@ export default class FamilyTree extends Component {
             )}
           </Form>
         </div>
+        <Footer />
       </div>
     );
   }

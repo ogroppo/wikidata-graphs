@@ -6,6 +6,8 @@ import moment from "moment";
 
 import Header from "../../layout/Header/Header";
 import { Badge } from "react-bootstrap";
+import Footer from "../../layout/Footer/Footer";
+import getHisoricalCountries from "../../sparqlQueries/getHisoricalCountries";
 
 export default class HistoricalCountries extends Component {
   state = {
@@ -23,17 +25,7 @@ export default class HistoricalCountries extends Component {
   }
 
   getData = () => {
-    this.query = `SELECT DISTINCT ?item ?itemLabel ?img ?start ?end WHERE {
-      ?item wdt:P31 wd:Q3024240;
-      OPTIONAL {
-        ?item wdt:P41 ?img;
-          wdt:P580 ?start;
-          wdt:P582 ?end.
-      }
-      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-    }
-    ORDER BY ?start`;
-
+    this.query = getHisoricalCountries();
     const url = wdk.sparqlQuery(this.query);
 
     fetch(url)
@@ -80,8 +72,9 @@ export default class HistoricalCountries extends Component {
       } else withoutDate.push(result);
     });
 
-    minYear -= 100;
-    maxYear += 100;
+    const paddingYears = Math.floor((maxYear - minYear) * 0.1); //10%
+    minYear -= paddingYears;
+    maxYear += paddingYears;
 
     let yearRange = maxYear - minYear;
 
@@ -99,6 +92,7 @@ export default class HistoricalCountries extends Component {
     });
 
     let decimationFactor = Math.floor(60 / YEAR_SIZE);
+
     let ticks = [];
     for (let index = minYear; index <= maxYear; index++) {
       ticks.push({
@@ -158,6 +152,11 @@ export default class HistoricalCountries extends Component {
                           style={{ left, width }}
                         >
                           <div className="line"></div>
+                          <div className={`datesWrapper ${contentClass}`}>
+                            <span className={`dates`}>
+                              {startDateFormatted} - {endDateFormatted}
+                            </span>
+                          </div>
                           <div className={`content ${contentClass}`}>
                             {images.map((img, index) => (
                               <span key={index} className="imgWrapper">
@@ -169,8 +168,7 @@ export default class HistoricalCountries extends Component {
                               href={`https://www.wikidata.org/wiki/${item.value}`}
                             >
                               {item.label}
-                            </a>{" "}
-                            - from {startDateFormatted} to {endDateFormatted}
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -208,6 +206,7 @@ export default class HistoricalCountries extends Component {
             </>
           )}
         </div>
+        <Footer />
       </div>
     );
   }

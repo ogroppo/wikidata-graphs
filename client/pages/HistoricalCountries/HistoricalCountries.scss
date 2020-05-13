@@ -2,7 +2,8 @@
   .timeline {
     position: relative;
     overflow-x: scroll;
-    border: 1px solid grey;
+    border: 1px solid lightgray;
+    border-radius: 4px;
     margin-bottom: 20px;
   }
   .scrollableY {
@@ -20,7 +21,7 @@
     .line {
       position: relative;
       width: 100%;
-      background-color: grey;
+      background-color: red;
       border-radius: 4px;
       display: inline-block;
       height: 8px;
@@ -37,6 +38,29 @@
         right: 0;
       }
     }
+    .datesWrapper {
+      position: absolute;
+      top: 3px;
+      width: 0;
+      .dates {
+        font-size: 12px;
+        white-space: nowrap;
+        position: absolute;
+      }
+      &.left {
+        right: -4px;
+        .dates {
+          left: 0;
+        }
+      }
+      &.right {
+        left: -4px;
+        .dates {
+          right: 0;
+        }
+      }
+    }
+
     .imgWrapper {
       width: 2em;
       height: 2em;
@@ -54,7 +78,7 @@
     height: 28px;
     position: relative;
     display: block;
-    border-bottom: 1px solid grey;
+    border-bottom: 1px solid lightgray;
     .tick {
       position: absolute;
       bottom: 0;

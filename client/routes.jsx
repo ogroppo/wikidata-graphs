@@ -9,6 +9,7 @@ import TimelinesPage from "./pages/TimelinesPage/TimelinesPage";
 import HistoricalCountries from "./pages/HistoricalCountries/HistoricalCountries";
 import TreesPage from "./pages/TreesPage/TreesPage";
 import FamilyTree from "./pages/FamilyTree/FamilyTree";
+import AboutPage from "./pages/AboutPage/AboutPage";
 
 const browserHistory = createBrowserHistory();
 
@@ -26,6 +27,7 @@ export const renderRoutes = () => (
       <Route exact path="/tree/family-tree" component={FamilyTree} />
       <Route exact path="/login" component={LoginPage} />
       <Route exact path="/signup" component={SignupPage} />
+      <Route exact path="/about" component={AboutPage} />
       <Route component={NotFound} />
     </Switch>
   </Router>

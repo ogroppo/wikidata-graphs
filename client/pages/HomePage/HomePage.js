@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withTracker } from "meteor/react-meteor-data";
 import { Link } from "react-router-dom";
 import Header from "../../layout/Header/Header";
+import Footer from "../../layout/Footer/Footer";
 import { MdTimeline } from "react-icons/md";
 import { GiFamilyTree } from "react-icons/gi";
 import "./HomePage.scss";
@@ -33,6 +34,7 @@ class HomePage extends Component {
             </Link>
           </p>
         </div>
+        <Footer />
       </div>
     );
   }

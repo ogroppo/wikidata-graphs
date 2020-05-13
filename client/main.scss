@@ -1,5 +1,6 @@
 .fullContainer {
   padding: 20px 2%;
+  min-height: calc(100vh - 100px);
 }
 
 h1 {
@@ -21,4 +22,5 @@ code {
   background-color: azure;
   display: block;
   padding: 8px;
+  overflow: auto;
 }
