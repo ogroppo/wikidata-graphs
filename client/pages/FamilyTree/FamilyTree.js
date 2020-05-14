@@ -10,6 +10,7 @@ import _ from "underscore";
 import "./FamilyTree.scss";
 import FamilyTreeGraph from "./FamilyTreeGraph";
 import Footer from "../../layout/Footer/Footer";
+import searchPersonQuery from "./searchPersonQuery";
 
 export default class FamilyTree extends Component {
   state = {
@@ -18,9 +19,18 @@ export default class FamilyTree extends Component {
     searchResults: [],
     showSuggesstions: false,
   };
+
   componentDidMount() {
     ReactGA.set({ page: this.props.location.pathname });
     ReactGA.pageview(this.props.location.pathname);
+
+    if (this.props.location.hash) {
+      this.search(decodeURI(this.props.location.hash.substr(1)), (results) => {
+        if (results[0]) {
+          this.goToPerson(results[0]);
+        }
+      });
+    }
   }
 
   onChange = (e) => {
@@ -28,36 +38,25 @@ export default class FamilyTree extends Component {
     this.setState(
       {
         searchValue,
-        showSuggesstions: true,
+        showSuggesstions: searchValue.length,
       },
       this.lazySearch
     );
   };
 
-  search = (label) => {
-    let query = `
-    SELECT ?item ?itemLabel ?itemDescription ?img ?genderLabel ?familyNameLabel WHERE {
-      ?item wdt:P31 wd:Q5.
-      ?item ?label '${label}'@en .
-      optional { ?item wdt:P734 ?familyName . }
-      optional { ?item wdt:P18 ?img . }
-      optional { ?item wdt:P21 ?gender . }
-      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-    }
-    LIMIT 10
-    `;
-
-    const url = wdk.sparqlQuery(query);
-
-    fetch(url)
-      .then((response) => response.json())
-      .then(wdk.simplify.sparqlResults)
+  search = (label, cb) => {
+    searchPersonQuery(label)
       .then((searchResults) => {
-        this.setState({
-          searchResults: this.formatResults(searchResults),
-          loadingSuggestions: false,
-        });
-      });
+        if (cb) {
+          cb(searchResults);
+        } else {
+          this.setState({
+            searchResults,
+            loadingSuggestions: false,
+          });
+        }
+      })
+      .catch((error) => this.setState({ error, showSuggesstions: false }));
   };
 
   lazySearch = _.debounce(() => {
@@ -76,20 +75,10 @@ export default class FamilyTree extends Component {
     this.search(titleCaseSearch);
   }, 300);
 
-  formatResults = (results) => {
-    let formatted = [];
-    results.forEach(({ item, ...rest }) => {
-      formatted.push({
-        ...rest,
-        ...item,
-      });
-    });
-    return formatted;
-  };
-
   goToPerson = (root) => {
+    this.props.history.push("#" + root.itemLabel);
     this.setState({
-      searchValue: root.label,
+      searchValue: root.itemLabel,
       searchResults: [],
       showSuggesstions: false,
       root,
@@ -103,12 +92,13 @@ export default class FamilyTree extends Component {
       root,
       loadingSuggestions,
       showSuggesstions,
+      error,
     } = this.state;
     return (
       <div className="FamilyTree">
         <Header />
         <div className="fullContainer">
-          <h1>Family Tree</h1>
+          <h1>Family Tree Explorer</h1>
           <Form onSubmit={(e) => e.preventDefault()} autoComplete="off">
             <Form.Group className="searchGroup" controlId="searchPerson">
               <Form.Label>
@@ -138,28 +128,43 @@ export default class FamilyTree extends Component {
                   </div>
                 )}
                 {searchResults.map((result, index) => (
-                  <div key={index}>
+                  <div key={result.id}>
                     <Button
                       className="searchResultBtn"
                       variant="link"
                       onClick={() => this.goToPerson(result)}
                     >
-                      {result.label}
-                      {result.description && <i>({result.description})</i>}
+                      {result.itemLabel}
+                      {result.itemDescription && (
+                        <i>({result.itemDescription})</i>
+                      )}
                     </Button>
                   </div>
                 ))}
               </div>
             </Form.Group>
-            {root ? (
-              <FamilyTreeGraph root={root} goToPerson={this.goToPerson} />
-            ) : (
-              <Alert variant="info">
-                Hint: if you search by full name the results will be more
-                accurate.
-              </Alert>
-            )}
           </Form>
+          {error && <Alert variant="danger">{error.message}</Alert>}
+          {root ? (
+            <>
+              <FamilyTreeGraph root={root} goToPerson={this.goToPerson} />
+              <div className="mt-4">
+                <h2>{root.itemLabel}</h2>
+                <p>{root.itemDescription}</p>
+                <p>
+                  See on Wikidata:&nbsp;
+                  <a
+                    href={`https://www.wikidata.org/wiki/${root.id}`}
+                  >{`https://www.wikidata.org/wiki/${root.id}`}</a>
+                </p>
+              </div>
+            </>
+          ) : (
+            <Alert variant="info">
+              Hint: if you search by full name the results will be more
+              accurate.
+            </Alert>
+          )}
         </div>
         <Footer />
       </div>

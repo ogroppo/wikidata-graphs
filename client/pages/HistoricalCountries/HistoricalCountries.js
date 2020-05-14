@@ -5,9 +5,9 @@ import "./HistoricalCountries.scss";
 import moment from "moment";
 
 import Header from "../../layout/Header/Header";
-import { Badge } from "react-bootstrap";
+import { Badge, Alert } from "react-bootstrap";
 import Footer from "../../layout/Footer/Footer";
-import getHisoricalCountries from "../../sparqlQueries/getHisoricalCountries";
+import getHisoricalCountriesQuery from "./getHisoricalCountriesQuery";
 
 export default class HistoricalCountries extends Component {
   state = {
@@ -25,27 +25,21 @@ export default class HistoricalCountries extends Component {
   }
 
   getData = () => {
-    this.query = getHisoricalCountries();
+    this.setState({
+      loading: true,
+      error: false,
+    });
+    this.query = getHisoricalCountriesQuery();
     const url = wdk.sparqlQuery(this.query);
 
     fetch(url)
       .then((response) => response.json())
       .then(wdk.simplify.sparqlResults)
       .then((results) => {
-        let resultsMap = {};
-        results.forEach((result) => {
-          if (!resultsMap[result.item.value]) {
-            resultsMap[result.item.value] = result;
-            resultsMap[result.item.value].images = [];
-            if (result.img)
-              resultsMap[result.item.value].images.push(result.img);
-          } else resultsMap[result.item.value].images.push(result.img);
-        });
-
-        this.results = Object.values(resultsMap);
-
+        this.results = results;
         this.drawData();
-      });
+      })
+      .catch((error) => this.setState({ error, loading: false }));
   };
 
   drawData = () => {
@@ -112,16 +106,24 @@ export default class HistoricalCountries extends Component {
   };
 
   render() {
-    const { loading, withDate, ticks, timelineWidth, withoutDate } = this.state;
+    const {
+      loading,
+      withDate,
+      ticks,
+      timelineWidth,
+      withoutDate,
+      error,
+    } = this.state;
 
     return (
       <div className="HistoricalCountries">
         <Header />
         <div className="fullContainer">
           <h1>Timeline of historical countries</h1>
+          {error && <Alert variant="danger">{error.message}</Alert>}
           {loading && <p>loading...</p>}
           <div ref={this.timelineRef} className="timelineWrapper">
-            {!loading && (
+            {!loading && !error && (
               <div className="timeline">
                 <div className="ticks" style={{ width: timelineWidth }}>
                   {ticks.map(
@@ -138,7 +140,7 @@ export default class HistoricalCountries extends Component {
                   {withDate.map(
                     ({
                       item,
-                      images,
+                      img,
                       left,
                       width,
                       startDateFormatted,
@@ -158,11 +160,11 @@ export default class HistoricalCountries extends Component {
                             </span>
                           </div>
                           <div className={`content ${contentClass}`}>
-                            {images.map((img, index) => (
-                              <span key={index} className="imgWrapper">
+                            {img && (
+                              <span className="imgWrapper">
                                 <img src={img}></img>
                               </span>
-                            ))}{" "}
+                            )}
                             <a
                               target="_blank"
                               href={`https://www.wikidata.org/wiki/${item.value}`}
@@ -178,7 +180,7 @@ export default class HistoricalCountries extends Component {
               </div>
             )}
           </div>
-          {!loading && (
+          {!loading && !error && (
             <>
               <h2>The query</h2>
               <code className="mb-4">{this.query}</code>
@@ -188,13 +190,13 @@ export default class HistoricalCountries extends Component {
                   <Badge variant="secondary">{withoutDate.length}</Badge>
                 )}
               </h2>
-              {withoutDate.map(({ item, images }) => (
+              {withoutDate.map(({ item, img }) => (
                 <div key={item.value}>
-                  {images.map((img, index) => (
-                    <span key={index} className="imgWrapper">
+                  {img && (
+                    <span className="imgWrapper">
                       <img src={img}></img>
                     </span>
-                  ))}{" "}
+                  )}
                   <a
                     target="_blank"
                     href={`https://www.wikidata.org/wiki/${item.value}`}

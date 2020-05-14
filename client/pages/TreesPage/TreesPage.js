@@ -19,7 +19,7 @@ export default class TreesPage extends Component {
         <div className="fullContainer">
           <h1>Available Trees</h1>
           <p>
-            <Link to={"/tree/family-tree"}>Family Tree</Link>
+            <Link to={"/tree/family-tree-explorer"}>Family Tree Explorer</Link>
           </p>
         </div>
         <Footer />
