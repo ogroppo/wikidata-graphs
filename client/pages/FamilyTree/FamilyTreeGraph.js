@@ -208,6 +208,8 @@ export default class FamilyTreeGraph extends Component {
           positionY={positionY}
           options={{ limitToBounds: false, minScale: 0.2, maxScale: 2 }}
           onPanning={({ positionX, positionY }) => {
+            console.log("panning");
+
             this.setState({
               positionX,
               positionY,
@@ -216,7 +218,7 @@ export default class FamilyTreeGraph extends Component {
         >
           <TransformComponent>
             <div className="center">
-              {!loading && <Spinner animation="secondary" variant="info" />}
+              {loading && <Spinner animation="grow" variant="secondary" />}
               {svgStyle && (
                 <svg
                   style={svgStyle}
