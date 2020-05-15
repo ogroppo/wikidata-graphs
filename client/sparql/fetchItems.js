@@ -1,36 +1,67 @@
 import wdk from "wikidata-sdk";
+import moment from "moment";
 
-export default function fetchItems(query, idKey, keys) {
+export default function fetchItems(query, keys) {
   const url = wdk.sparqlQuery(query);
 
-  return fetch(url)
-    .then((response) => response.json())
-    .then((response) => {
-      let itemsMap = {};
+  let itemKey = null;
+  for (let variable in keys) {
+    if (keys[variable] === "id") itemKey = variable;
+  }
 
-      response.results.bindings.forEach((element) => {
-        let id = parseValue(element[idKey]);
-        itemsMap[id] = itemsMap[id] || { id };
-        let item = itemsMap[id];
-        response.head.vars.forEach((variable) => {
-          if (variable === idKey) return;
-          let value = parseValue(element[variable]);
-          switch (keys[variable]) {
-            case "string":
-              if (!item[variable]) item[variable] = value;
-              break;
-            case "array":
-              if (!item[variable]) item[variable] = [];
-              if (value !== undefined && item[variable].indexOf(value) < 0)
-                item[variable].push(value);
-            default:
-              break;
-          }
+  if (!itemKey) throw new Error("Item key missing");
+
+  return (
+    fetch(url)
+      .then((response) => response.json())
+      //.then(wdk.simplify.sparqlResults)
+      .then((response) => {
+        console.log({ response });
+
+        let itemsMap = {};
+
+        response.results.bindings.forEach((element) => {
+          let id = parseValue(element[itemKey]);
+          itemsMap[id] = itemsMap[id] || { id };
+          let item = itemsMap[id];
+          response.head.vars.forEach((variable) => {
+            if (variable === itemKey) return;
+            let value = parseValue(element[variable]);
+            switch (keys[variable]) {
+              case "string":
+                if (!item[variable]) item[variable] = value;
+                break;
+              case "moment":
+                if (value && !item[variable]) item[variable] = moment(value);
+                break;
+              case "coords":
+                if (value && !item[variable]) {
+                  const [lng, lat] = value
+                    .replace("Point(", "")
+                    .replace(")", "")
+                    .split(" ");
+
+                  item[variable] = [Number(lat), Number(lng)];
+                }
+                break;
+              case "number":
+                if (value && !item[variable]) {
+                  item[variable] = Number(value);
+                }
+                break;
+              case "array":
+                if (!item[variable]) item[variable] = [];
+                if (value !== undefined && item[variable].indexOf(value) < 0)
+                  item[variable].push(value);
+              default:
+                break;
+            }
+          });
         });
-      });
-      let results = Object.values(itemsMap);
-      return results;
-    });
+        let results = Object.values(itemsMap);
+        return results;
+      })
+  );
 }
 
 const parseValue = (keyObject) => {

@@ -7,6 +7,7 @@ import { MdTimeline } from "react-icons/md";
 import { GiFamilyTree } from "react-icons/gi";
 import "./HomePage.scss";
 import ReactGA from "react-ga";
+import { FaMapSigns } from "react-icons/fa";
 
 class HomePage extends Component {
   componentDidMount() {
@@ -31,6 +32,12 @@ class HomePage extends Component {
             <Link to={"/trees"}>
               <GiFamilyTree className="mr-2" />
               Trees
+            </Link>
+          </p>
+          <p>
+            <Link to={"/maps"}>
+              <FaMapSigns className="mr-2" />
+              Maps
             </Link>
           </p>
         </div>

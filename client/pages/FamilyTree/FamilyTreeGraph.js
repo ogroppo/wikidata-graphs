@@ -208,8 +208,6 @@ export default class FamilyTreeGraph extends Component {
           positionY={positionY}
           options={{ limitToBounds: false, minScale: 0.2, maxScale: 2 }}
           onPanning={({ positionX, positionY }) => {
-            console.log("panning");
-
             this.setState({
               positionX,
               positionY,

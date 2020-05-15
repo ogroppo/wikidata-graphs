@@ -15,12 +15,10 @@ export default (label) => {
   const q = query(label);
 
   let keys = {
-    item: "string",
+    item: "id",
     itemLabel: "string",
     itemDescription: "string",
   };
 
-  const idKey = "item";
-
-  return fetchItems(q, idKey, keys);
+  return fetchItems(q, keys);
 };

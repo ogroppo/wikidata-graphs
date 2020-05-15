@@ -10,6 +10,8 @@ import HistoricalCountries from "./pages/HistoricalCountries/HistoricalCountries
 import TreesPage from "./pages/TreesPage/TreesPage";
 import FamilyTree from "./pages/FamilyTree/FamilyTree";
 import AboutPage from "./pages/AboutPage/AboutPage";
+import MapsPage from "./pages/MapsPage/MapsPage";
+import NearestBattle from "./pages/NearestBattle/NearestBattle";
 
 const browserHistory = createBrowserHistory();
 
@@ -25,6 +27,8 @@ export const renderRoutes = () => (
       />
       <Route exact path="/trees" component={TreesPage} />
       <Route exact path="/tree/family-tree-explorer" component={FamilyTree} />
+      <Route exact path="/maps" component={MapsPage} />
+      <Route exact path="/map/nearest-battle" component={NearestBattle} />
       <Route exact path="/login" component={LoginPage} />
       <Route exact path="/signup" component={SignupPage} />
       <Route exact path="/about" component={AboutPage} />

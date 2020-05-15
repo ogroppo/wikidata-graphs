@@ -1,0 +1,42 @@
+.NearestBattle {
+  .mapContainer {
+  }
+  .battlePopup {
+    b {
+      font-size: 15px;
+      margin-bottom: 3px;
+    }
+  }
+  .imgContainer {
+    margin-top: 3px;
+    display: flex;
+    height: 100px;
+    overflow-x: scroll;
+    img {
+      height: 100%;
+    }
+  }
+  .radiusSearch {
+    fill: none;
+  }
+  .myMarker {
+    stroke: red;
+    fill: red;
+    fill-opacity: 1;
+    stroke-width: 2;
+    animation: mymove 2s ease-in infinite;
+    //stroke-dasharray: 5 5;
+  }
+}
+
+@keyframes mymove {
+  0% {
+    stroke-width: 2;
+  }
+  50% {
+    stroke-width: 6;
+  }
+  100% {
+    stroke-width: 2;
+  }
+}

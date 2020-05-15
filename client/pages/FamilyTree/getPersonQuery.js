@@ -24,7 +24,7 @@ export default (id, type) => {
   const q = query(id, type);
 
   let keys = {
-    item: "string",
+    item: "id",
     itemLabel: "string",
     givenNameLabel: "array",
     familyNameLabel: "array",
@@ -32,7 +32,5 @@ export default (id, type) => {
     image: "string",
   };
 
-  const idKey = "item";
-
-  return fetchItems(q, idKey, keys);
+  return fetchItems(q, keys);
 };
