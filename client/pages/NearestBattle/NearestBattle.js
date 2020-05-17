@@ -61,6 +61,8 @@ class BattleMap extends Component {
     getNearestBattleQuery(coords.latitude, coords.longitude)
       .then(([directBattles, placeBattles]) => {
         let battles = mergeResults(directBattles, placeBattles);
+        console.log(battles);
+
         let bounds = null;
         if (battles[0]) {
           bounds = latLngBounds([
@@ -118,7 +120,14 @@ class BattleMap extends Component {
                     {battle.battleLabel}{" "}
                   </a>
                   {battle.pointInTime && (
-                    <span>({battle.pointInTime.format("DD MMM YYYY")})</span>
+                    <span>
+                      (
+                      {formatWithPrecision(
+                        battle.pointInTime,
+                        battle.pointInTimePrecision
+                      )}
+                      )
+                    </span>
                   )}
                 </b>
                 <div>{battle.battleDescription}</div>
@@ -173,6 +182,19 @@ export default geolocated({
   },
   userDecisionTimeout: 5000,
 })(NearestBattle);
+
+function formatWithPrecision(date, precision) {
+  switch (precision) {
+    case 11: //day
+      return date.utc().format("D MMM Y");
+    case 10: //month
+      return date.utc().format("MMM Y");
+    case 9: //year
+      return date.utc().format("Y");
+    default:
+      return date.format();
+  }
+}
 
 function mergeResults(...arrays) {
   let map = {};

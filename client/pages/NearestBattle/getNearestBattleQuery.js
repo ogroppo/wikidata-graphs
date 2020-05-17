@@ -1,7 +1,7 @@
 import fetchItems from "../../sparql/fetchItems";
 
 const battleWithCoord = (lat, lng) =>
-  `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime
+  `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime ?pointInTimePrecision
 WHERE {
   SERVICE wikibase:around { 
     ?battle wdt:P625 ?location . 
@@ -11,14 +11,14 @@ WHERE {
   } 
   ?battle wdt:P31 wd:Q178561.
   OPTIONAL { ?battle wdt:P18 ?images . }
-  OPTIONAL { ?battle wdt:P585 ?pointInTime . }
+  OPTIONAL { ?battle p:P585/psv:P585 [ wikibase:timePrecision ?pointInTimePrecision ; wikibase:timeValue ?pointInTime ;] . }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }
 ORDER BY ?distance
 `;
 
 const battleWithPlace = (lat, lng) =>
-  `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime
+  `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime ?pointInTimePrecision
 WHERE {
   ?battle wdt:P31 wd:Q178561;
   wdt:P276 ?place.
@@ -30,7 +30,7 @@ WHERE {
   } 
   ?battle wdt:P31 wd:Q178561.
   OPTIONAL { ?battle wdt:P18 ?images . }
-  OPTIONAL { ?battle wdt:P585 ?pointInTime . }
+  OPTIONAL { ?battle p:P585/psv:P585 [ wikibase:timePrecision ?pointInTimePrecision ; wikibase:timeValue ?pointInTime ;] . }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }
 ORDER BY ?distance
@@ -48,6 +48,7 @@ export default (lat, lng) => {
     distance: "number",
     images: "array",
     pointInTime: "moment",
+    pointInTimePrecision: "number",
   };
 
   return Promise.all([
