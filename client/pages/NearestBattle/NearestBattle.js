@@ -12,9 +12,8 @@ import {
 } from "react-leaflet";
 import { latLngBounds, icon } from "leaflet";
 import { geolocated } from "react-geolocated";
-import { Alert } from "react-bootstrap";
+import { Alert, Badge } from "react-bootstrap";
 import getNearestBattleQuery from "./getNearestBattleQuery";
-import { FaStreetView } from "react-icons/fa";
 
 class NearestBattle extends Component {
   componentDidMount() {
@@ -28,13 +27,16 @@ class NearestBattle extends Component {
       <div className="NearestBattle">
         <Header />
         <div className="fullContainer">
-          <h1>Nearest Battle ever fought</h1>
+          <h1>Nearest Battle Map</h1>
           {!this.props.isGeolocationAvailable ? (
-            <Alert variant="info">
+            <Alert variant="danger">
               Your browser does not support Geolocation
             </Alert>
           ) : !this.props.isGeolocationEnabled ? (
-            <Alert variant="info">Geolocation is not enabled</Alert>
+            <Alert variant="warning">
+              Please enable Geolocation from your browser's settings to see the
+              map.
+            </Alert>
           ) : coords ? (
             <BattleMap coords={coords} />
           ) : (
@@ -55,8 +57,10 @@ class BattleMap extends Component {
   };
   componentDidMount() {
     const { coords } = this.props;
+
     getNearestBattleQuery(coords.latitude, coords.longitude)
-      .then((battles) => {
+      .then(([directBattles, placeBattles]) => {
+        let battles = mergeResults(directBattles, placeBattles);
         let bounds = null;
         if (battles[0]) {
           bounds = latLngBounds([
@@ -71,6 +75,7 @@ class BattleMap extends Component {
         });
       })
       .catch((error) => {
+        console.error(error);
         this.setState({ error, loading: false });
       });
   }
@@ -110,13 +115,13 @@ class BattleMap extends Component {
               <Popup className="battlePopup">
                 <b>
                   <a href={`https://www.wikidata.org/wiki/${battle.id}`}>
-                    {battle.placeLabel}{" "}
+                    {battle.battleLabel}{" "}
                   </a>
                   {battle.pointInTime && (
                     <span>({battle.pointInTime.format("DD MMM YYYY")})</span>
                   )}
                 </b>
-                <div>{battle.placeDescription}</div>
+                <div>{battle.battleDescription}</div>
                 {!!battle.images.length && (
                   <div className="imgContainer">
                     {battle.images.map((image) => (
@@ -134,16 +139,23 @@ class BattleMap extends Component {
         </Map>
         {battles.length ? (
           <>
-            <h2 className="">List of Battles near you</h2>
+            <h2 className="">
+              List of Battles near you (within 50Km){" "}
+              <Badge variant="secondary" pill>
+                {battles.length}
+              </Badge>
+            </h2>
+
             {battles.map((battle) => (
               <p key={battle.id}>
+                <i>{battle.distance}Km</i>{" "}
                 <a href={`https://www.wikidata.org/wiki/${battle.id}`}>
-                  {battle.placeLabel}
+                  {battle.battleLabel}
                 </a>
                 {battle.pointInTime && (
                   <span> ({battle.pointInTime.format("D MMMM Y")})</span>
                 )}{" "}
-                {battle.placeDescription}
+                {battle.battleDescription}
               </p>
             ))}
           </>
@@ -161,3 +173,17 @@ export default geolocated({
   },
   userDecisionTimeout: 5000,
 })(NearestBattle);
+
+function mergeResults(...arrays) {
+  let map = {};
+  arrays[0].forEach((element) => {
+    map[element.id] = element;
+  });
+
+  arrays.slice(1).forEach((array) => {
+    array.forEach((element) => {
+      if (!map[element.id]) map[element.id] = element;
+    });
+  });
+  return Object.values(map);
+}

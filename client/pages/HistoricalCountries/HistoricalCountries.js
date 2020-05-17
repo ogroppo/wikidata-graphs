@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import ReactGA from "react-ga";
 import wdk from "wikidata-sdk";
-import "./HistoricalCountries.scss";
 import moment from "moment";
-
 import Header from "../../layout/Header/Header";
 import { Badge, Alert } from "react-bootstrap";
 import Footer from "../../layout/Footer/Footer";
@@ -52,13 +50,13 @@ export default class HistoricalCountries extends Component {
     let withDate = [];
     let withoutDate = [];
     this.results.forEach((result) => {
-      if (result.start && result.end) {
-        let startDate = moment(result.start, "Y-MM-DD");
+      if (result.inception && result.dissolved) {
+        let startDate = moment(result.inception, "Y-MM-DD");
         minYear = Math.min(minYear, startDate.year());
         result.startYear = startDate.year();
         result.startDateFormatted = formatDate(startDate);
 
-        let endDate = moment(result.end, "Y-MM-DD");
+        let endDate = moment(result.dissolved, "Y-MM-DD");
         maxYear = Math.max(maxYear, endDate.year());
         result.endYear = endDate.year();
         result.endDateFormatted = formatDate(endDate);
@@ -78,10 +76,12 @@ export default class HistoricalCountries extends Component {
 
     withDate.forEach((result) => {
       if (result.startYear) {
-        result.left = YEAR_SIZE * (result.startYear - minYear);
+        const yearsFromStartTimeline = result.startYear - minYear;
+        result.left = YEAR_SIZE * yearsFromStartTimeline;
         result.width = YEAR_SIZE * (result.endYear - result.startYear);
+
         result.contentClass =
-          result.startYear > yearRange / 2 ? "right" : "left";
+          yearsFromStartTimeline > yearRange / 2 ? "right" : "left";
       }
     });
 
@@ -91,7 +91,7 @@ export default class HistoricalCountries extends Component {
     for (let index = minYear; index <= maxYear; index++) {
       ticks.push({
         left: YEAR_SIZE * (index - minYear),
-        year: index <= 0 ? Math.abs(index) + 1 + " BCE" : index,
+        year: index <= 0 ? Math.abs(index) + 1 + " BC" : index,
         showYear: !(index % decimationFactor),
       });
     }
@@ -119,7 +119,15 @@ export default class HistoricalCountries extends Component {
       <div className="HistoricalCountries">
         <Header />
         <div className="fullContainer">
-          <h1>Timeline of historical countries</h1>
+          <h1>Timeline of Historical Countries </h1>
+          {!!withDate.length && (
+            <p>
+              <Badge variant="secondary" pill>
+                {withDate.length}
+              </Badge>{" "}
+              Historical Countries found
+            </p>
+          )}
           {error && <Alert variant="danger">{error.message}</Alert>}
           {loading && <p>loading...</p>}
           <div ref={this.timelineRef} className="timelineWrapper">
@@ -187,7 +195,9 @@ export default class HistoricalCountries extends Component {
               <h2>
                 Entries without start date/end date{" "}
                 {!!withoutDate.length && (
-                  <Badge variant="secondary">{withoutDate.length}</Badge>
+                  <Badge variant="secondary" pill>
+                    {withoutDate.length}
+                  </Badge>
                 )}
               </h2>
               {withoutDate.map(({ item, img }) => (
@@ -217,7 +227,7 @@ export default class HistoricalCountries extends Component {
 function formatDate(date) {
   let string = date.format("D MMM");
   let year = date.year();
-  if (year <= 0) string += ` ${Math.abs(year) + 1} BCE`;
+  if (year <= 0) string += ` ${Math.abs(year) + 1} BC`;
   else string += ` ${year}`;
   return string;
 }

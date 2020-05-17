@@ -1,37 +1,57 @@
 import fetchItems from "../../sparql/fetchItems";
 
-const query = (lat, lng) =>
-  `SELECT ?place ?placeLabel ?placeDescription ?location ?distance ?images ?pointInTime
+const battleWithCoord = (lat, lng) =>
+  `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime
 WHERE {
   SERVICE wikibase:around { 
-    ?place wdt:P625 ?location . 
+    ?battle wdt:P625 ?location . 
     bd:serviceParam wikibase:center "Point(${lng} ${lat})"^^geo:wktLiteral .
-    bd:serviceParam wikibase:radius "100" . 
+    bd:serviceParam wikibase:radius "50" . 
     bd:serviceParam wikibase:distance ?distance .
   } 
-  ?place wdt:P31 wd:Q178561.
-  OPTIONAL { ?place wdt:P18 ?images . }
-  OPTIONAL { ?place wdt:P585 ?pointInTime . }
+  ?battle wdt:P31 wd:Q178561.
+  OPTIONAL { ?battle wdt:P18 ?images . }
+  OPTIONAL { ?battle wdt:P585 ?pointInTime . }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }
 ORDER BY ?distance
-LIMIT 10
 `;
 
-export default (id, type) => {
-  const q = query(id, type);
+const battleWithPlace = (lat, lng) =>
+  `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime
+WHERE {
+  ?battle wdt:P31 wd:Q178561;
+  wdt:P276 ?place.
+  SERVICE wikibase:around { 
+    ?place wdt:P625 ?location . 
+    bd:serviceParam wikibase:center "Point(${lng} ${lat})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:radius "50" . 
+    bd:serviceParam wikibase:distance ?distance .
+  } 
+  ?battle wdt:P31 wd:Q178561.
+  OPTIONAL { ?battle wdt:P18 ?images . }
+  OPTIONAL { ?battle wdt:P585 ?pointInTime . }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+ORDER BY ?distance
+`;
 
-  console.log(q);
+export default (lat, lng) => {
+  const battleWithCoordQuery = battleWithCoord(lat, lng);
+  const battleWithPlaceQuery = battleWithPlace(lat, lng);
 
   let keys = {
-    place: "id",
-    placeLabel: "string",
-    placeDescription: "string",
+    battle: "id",
+    battleLabel: "string",
+    battleDescription: "string",
     location: "coords",
     distance: "number",
     images: "array",
     pointInTime: "moment",
   };
 
-  return fetchItems(q, keys);
+  return Promise.all([
+    fetchItems(battleWithCoordQuery, keys),
+    fetchItems(battleWithPlaceQuery, keys),
+  ]);
 };
