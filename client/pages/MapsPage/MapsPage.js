@@ -18,7 +18,7 @@ export default class MapsPage extends Component {
         <div className="fullContainer">
           <h1>Available Maps</h1>
           <p>
-            <Link to={"/map/nearest-battle"}>Nearest Battle</Link>
+            <Link to={"/map/battles-near-me"}>Battles fought near me</Link>
           </p>
         </div>
         <Footer />

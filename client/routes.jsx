@@ -28,7 +28,7 @@ export const renderRoutes = () => (
       <Route exact path="/trees" component={TreesPage} />
       <Route exact path="/tree/family-tree-explorer" component={FamilyTree} />
       <Route exact path="/maps" component={MapsPage} />
-      <Route exact path="/map/nearest-battle" component={NearestBattle} />
+      <Route exact path="/map/battles-near-me" component={NearestBattle} />
       <Route exact path="/login" component={LoginPage} />
       <Route exact path="/signup" component={SignupPage} />
       <Route exact path="/about" component={AboutPage} />

@@ -12,22 +12,60 @@ import {
 } from "react-leaflet";
 import { latLngBounds, icon } from "leaflet";
 import { geolocated } from "react-geolocated";
-import { Alert, Badge } from "react-bootstrap";
+import { Alert, Badge, Dropdown } from "react-bootstrap";
 import getNearestBattleQuery from "./getNearestBattleQuery";
 
 class NearestBattle extends Component {
+  state = { radius: 50 };
+
   componentDidMount() {
     ReactGA.set({ page: this.props.location.pathname });
     ReactGA.pageview(this.props.location.pathname);
   }
 
+  setRadius = (radius) => {
+    this.setState({
+      radius,
+    });
+  };
+
   render() {
     const { coords } = this.props;
+    const { radius } = this.state;
+    //const coords = { latitude: 45.8045, longitude: 9.0391 };
     return (
       <div className="NearestBattle">
         <Header />
         <div className="fullContainer">
-          <h1>Nearest Battle Map</h1>
+          <div className="topStuff">
+            <h1>Battles fought near me</h1>
+            <Dropdown className="ml-auto">
+              <Dropdown.Toggle
+                variant="secondary"
+                size="sm"
+                id="dropdown-basic"
+              >
+                within {radius}Km
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => this.setRadius(10)} href="#">
+                  10Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(30)} href="#">
+                  30Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(50)} href="#">
+                  50Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(70)} href="#">
+                  70Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(90)} href="#">
+                  90Km
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
           {!this.props.isGeolocationAvailable ? (
             <Alert variant="danger">
               Your browser does not support Geolocation
@@ -38,7 +76,7 @@ class NearestBattle extends Component {
               map.
             </Alert>
           ) : coords ? (
-            <BattleMap coords={coords} />
+            <BattleMap radius={radius} coords={coords} />
           ) : (
             <Alert variant="info">Getting you location...</Alert>
           )}
@@ -55,21 +93,25 @@ class BattleMap extends Component {
     battles: [],
     bounds: null,
   };
+
   componentDidMount() {
-    const { coords } = this.props;
+    this.getData();
+  }
 
-    getNearestBattleQuery(coords.latitude, coords.longitude)
+  getData = () => {
+    const { coords, radius } = this.props;
+
+    getNearestBattleQuery(coords.latitude, coords.longitude, radius)
       .then(([directBattles, placeBattles]) => {
-        let battles = mergeResults(directBattles, placeBattles);
-        console.log(battles);
+        let battles = mergeResults(directBattles, placeBattles).sort(
+          (a, b) => a.distance - b.distance
+        );
 
-        let bounds = null;
-        if (battles[0]) {
-          bounds = latLngBounds([
-            [coords.latitude, coords.longitude],
-            battles[0].location,
-          ]);
-        }
+        let bounds = latLngBounds([
+          [coords.latitude, coords.longitude],
+          ...battles.map(({ location }) => location),
+        ]);
+
         this.setState({
           battles,
           loading: false,
@@ -80,10 +122,14 @@ class BattleMap extends Component {
         console.error(error);
         this.setState({ error, loading: false });
       });
+  };
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.radius !== this.props.radius) this.getData();
   }
 
   render() {
-    const { coords } = this.props;
+    const { coords, radius } = this.props;
     const { battles, bounds, loading, error } = this.state;
 
     if (loading) return <Alert variant="info">Searching for Battles...</Alert>;
@@ -103,7 +149,7 @@ class BattleMap extends Component {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />{" "}
           <Circle
-            radius={50000}
+            radius={radius * 1000}
             className="radiusSearch"
             center={[coords.latitude, coords.longitude]}
           ></Circle>
@@ -149,7 +195,7 @@ class BattleMap extends Component {
         {battles.length ? (
           <>
             <h2 className="">
-              List of Battles near you (within 50Km){" "}
+              List of Battles&nbsp;
               <Badge variant="secondary" pill>
                 {battles.length}
               </Badge>

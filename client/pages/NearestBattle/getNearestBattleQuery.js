@@ -1,12 +1,12 @@
 import fetchItems from "../../sparql/fetchItems";
 
-const battleWithCoord = (lat, lng) =>
+const battleWithCoord = (lat, lng, radius) =>
   `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime ?pointInTimePrecision
 WHERE {
   SERVICE wikibase:around { 
     ?battle wdt:P625 ?location . 
     bd:serviceParam wikibase:center "Point(${lng} ${lat})"^^geo:wktLiteral .
-    bd:serviceParam wikibase:radius "50" . 
+    bd:serviceParam wikibase:radius "${radius}" . 
     bd:serviceParam wikibase:distance ?distance .
   } 
   ?battle wdt:P31 wd:Q178561.
@@ -17,7 +17,7 @@ WHERE {
 ORDER BY ?distance
 `;
 
-const battleWithPlace = (lat, lng) =>
+const battleWithPlace = (lat, lng, radius) =>
   `SELECT ?battle ?battleLabel ?battleDescription ?location ?distance ?images ?pointInTime ?pointInTimePrecision
 WHERE {
   ?battle wdt:P31 wd:Q178561;
@@ -25,7 +25,7 @@ WHERE {
   SERVICE wikibase:around { 
     ?place wdt:P625 ?location . 
     bd:serviceParam wikibase:center "Point(${lng} ${lat})"^^geo:wktLiteral .
-    bd:serviceParam wikibase:radius "50" . 
+    bd:serviceParam wikibase:radius "${radius}" . 
     bd:serviceParam wikibase:distance ?distance .
   } 
   ?battle wdt:P31 wd:Q178561.
@@ -36,9 +36,9 @@ WHERE {
 ORDER BY ?distance
 `;
 
-export default (lat, lng) => {
-  const battleWithCoordQuery = battleWithCoord(lat, lng);
-  const battleWithPlaceQuery = battleWithPlace(lat, lng);
+export default (lat, lng, radius) => {
+  const battleWithCoordQuery = battleWithCoord(lat, lng, radius);
+  const battleWithPlaceQuery = battleWithPlace(lat, lng, radius);
 
   let keys = {
     battle: "id",
