@@ -64,13 +64,13 @@ export default class FamilyTree extends Component {
       loadingSuggestions: true,
     });
 
-    let titleCaseSearch =
-      this.state.searchValue.length > 1
-        ? this.state.searchValue
-            .split(" ")
-            .map((w) => w[0].toUpperCase() + w.substr(1).toLowerCase())
-            .join(" ")
-        : this.state.searchValue.toUpperCase;
+    const { searchValue } = this.state;
+
+    if (!searchValue) return;
+    let titleCaseSearch = this.state.searchValue
+      .split(" ")
+      .map((w) => w[0].toUpperCase() + w.substr(1).toLowerCase())
+      .join(" ");
 
     this.search(titleCaseSearch);
   }, 300);
