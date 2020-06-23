@@ -57,11 +57,20 @@ class NearestBattle extends Component {
                 <Dropdown.Item onClick={() => this.setRadius(50)} href="#">
                   50Km
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => this.setRadius(70)} href="#">
-                  70Km
-                </Dropdown.Item>
                 <Dropdown.Item onClick={() => this.setRadius(90)} href="#">
                   90Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(180)} href="#">
+                  180Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(300)} href="#">
+                  300Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(1000)} href="#">
+                  1000Km
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => this.setRadius(2000)} href="#">
+                  2000Km
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
